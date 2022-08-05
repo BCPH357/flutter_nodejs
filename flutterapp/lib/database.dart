@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutterapp/student.dart';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key,}) : super(key: key);
@@ -15,13 +16,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Student studentService = Student();
   @override
   Widget build(BuildContext context) {
+    final ValueNotifier<int?> dlgResult = ValueNotifier(null);
 
-    final deleteBtn = IconButton(
-      icon: const Icon(
-        Icons.delete_forever_outlined,
-      ),
-      onPressed: () => nullfunc(),
-    );
 
     final editBtn = IconButton(
       icon: const Icon(
@@ -61,12 +57,22 @@ class _MyHomePageState extends State<MyHomePage> {
                       TableRow(
                         children: <Widget>[
                           Container(
-                            child: deleteBtn,
+                            //delete bottom
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.delete_forever_outlined,
+                              ),
+                            onPressed: () async {
+                              var data = returnDeleteDate(snapshot.data![i]['articlenumber'], snapshot.data![i]['name']);
+                              var ans = await _showDialog(context, data);
+                              //dlgResult.value = ans;
+                            },
+                            ),
                           ),
                           Container(
                             child: Text(
                               snapshot.data![i]['articlenumber'],
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 15,
                                 color: Colors.black,
                                 fontWeight: FontWeight.w200,
@@ -77,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           Container(
                             child: Text(
                               snapshot.data![i]['name'],
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 15,
                                 color: Colors.black,
                                 fontWeight: FontWeight.w200,
@@ -88,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           Container(
                             child: Text(
                               snapshot.data![i]['day'],
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 15,
                                 color: Colors.black,
                                 fontWeight: FontWeight.w200,
@@ -99,7 +105,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           Container(
                             child: Text(
                               snapshot.data![i]['quantity'],
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 15,
                                 color: Colors.black,
                                 fontWeight: FontWeight.w200,
@@ -129,6 +135,64 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
   }
+
+  Future<http.Response> deleteTOBackend(String msg) {
+    return http.post(
+      Uri.parse('http://localhost:8000/api/v1/students'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        //title means instruction(status)
+        //name means insert data
+        'title': "delete",
+        'name': msg,
+
+        //'tel': title,
+      }),
+    );
+  }
+
+  _showDialog(BuildContext context, String deleteMsg) async {
+    var dlg = AlertDialog(
+      content: const Text('確認刪除？'),
+      contentPadding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+      contentTextStyle: const TextStyle(color: Colors.black, fontSize: 25),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      actions: <Widget>[
+        TextButton(
+          child: const Text(
+            "確定",
+            style: TextStyle(color: Colors.blue, fontSize: 20),
+          ),
+          onPressed: () {
+            deleteTOBackend(deleteMsg);
+            Navigator.pop(context, 1);
+          }
+        ),
+
+        TextButton(
+          child: const Text(
+            "取消",
+            style: TextStyle(color: Colors.black45, fontSize: 20),
+          ),
+          onPressed: () => Navigator.pop(context, -1),
+        ),
+      ],
+    );
+
+    var ans = showDialog(
+      context: context,
+      builder: (context) => dlg,
+    );
+
+    return ans;
+  }
+  String returnDeleteDate(String articlenumber, String name) {
+    var ans = articlenumber + "@" + name;
+    return ans;
+  }
+
   void nullfunc() {
     ;
   }

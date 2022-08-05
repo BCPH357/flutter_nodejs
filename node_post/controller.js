@@ -10,30 +10,36 @@ const getStudents = (req, res) => {
 };
 
 const insert = (insertdata) => {
-
     var data = insertdata.split("@");
 
     if (data.length === 4) {
-        const Pool = require("pg").Pool;
-
-        const pool = new Pool({
-            host: "localhost",
-            user: "postgres",
-            port: 5432,
-            password: "a35749374",
-            database: "cloud"
-        });
-
-        var queryletter =`INSERT INTO students(articlenumber, name, day, quantity) VALUES ($1, $2, $3, $4)`;
-        pool.query(queryletter, data, (err, res) => {
+        pool.query(queries.insert, data, (err, res) => {
         console.log(err ? err.stack : res.rows)
         })
     }
-
 }
+
+const deletedata = async (msg) => {
+    var data = msg.split("@");
+
+    if (data.length === 2) {    
+
+        try {
+
+            await pool.query(queries.deletedata, data); // sends queries
+            return true;
+        } 
+
+        catch (error) {
+            console.error(error.stack);
+            return false;
+        } 
+    }
+};
 
 
 module.exports = {
     getStudents,
     insert,
+    deletedata,
 };
