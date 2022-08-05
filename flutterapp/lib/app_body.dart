@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutterapp/addPage.dart';
 import 'package:flutterapp/database.dart';
 import 'package:flutterapp/table_title.dart';
+import 'addPage.dart';
 
 class AppBody extends StatelessWidget {
   const AppBody({Key? key}) : super(key: key);

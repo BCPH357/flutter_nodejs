@@ -22,7 +22,10 @@ app.post('/api/v1/students', function(req, res) {
 
     else if (req.body.title === "delete") {
         Controller.deletedata(req.body.name);
-        console.log(req.body.name);
+    }
+
+    else if (req.body.title === "edit") {
+        Controller.edit(req.body.name)
     }
     //console.log(req.body.tel);
     

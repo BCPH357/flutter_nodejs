@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutterapp/student.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'editPage.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key,}) : super(key: key);
@@ -17,14 +18,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final ValueNotifier<int?> dlgResult = ValueNotifier(null);
-
-
-    final editBtn = IconButton(
-      icon: const Icon(
-        Icons.edit_outlined,
-      ),
-      onPressed: () => nullfunc(),
-    );
 
     return  Container(
       child: FutureBuilder<List>(
@@ -114,7 +107,13 @@ class _MyHomePageState extends State<MyHomePage> {
                             margin: const EdgeInsets.only(left: 10, top: 5, bottom: 5),
                           ),
                           Container(
-                            child: editBtn,
+                            child: IconButton(
+                              icon: const Icon(
+                                Icons.edit_outlined,
+                              ),
+                              onPressed: () => Navigator.push(context,
+                                MaterialPageRoute(builder: (context) => editingPage(snapshot.data![i]['articlenumber'], snapshot.data![i]['name']))),
+                              ),
                           ),
                         ],
                       ),
